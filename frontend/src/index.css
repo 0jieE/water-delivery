@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "cv11", "ss01", "tnum" 0;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-slate-50 text-slate-700 antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight text-slate-900;
+  }
+  ::selection {
+    @apply bg-water-200 text-water-950;
+  }
+  /* One consistent, visible keyboard focus indicator everywhere. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-water-500 ring-offset-2 ring-offset-white;
+  }
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    @apply ring-0 ring-offset-0;
+  }
+  /* Slim, unobtrusive scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme("colors.slate.300") transparent;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---- Buttons ---------------------------------------------------------------------------- */
+  .btn {
+    @apply inline-flex h-10 select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold
+      transition duration-150 ease-out active:scale-[0.98]
+      disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-b from-water-500 to-water-600 text-white shadow-glow hover:from-water-500 hover:to-water-700;
+  }
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-slate-700 shadow-soft hover:border-slate-300 hover:bg-slate-50;
+  }
+  .btn-danger {
+    @apply btn bg-gradient-to-b from-red-500 to-red-600 text-white shadow-[0_8px_22px_-8px_rgb(220_38_38/0.6)] hover:to-red-700;
+  }
+  .btn-success {
+    @apply btn bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-[0_8px_22px_-8px_rgb(5_150_105/0.6)] hover:to-emerald-700;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100;
+  }
+  .btn-sm {
+    @apply h-8 rounded-lg px-3 text-xs;
+  }
+  .btn-lg {
+    @apply h-14 rounded-2xl px-5 text-base;
+  }
+  /* Comfortable touch targets inside the phone-style shell (customer / rider). */
+  .phone .btn:not(.btn-sm) {
+    @apply min-h-11;
+  }
+
+  /* ---- Form controls ---------------------------------------------------------------------- */
+  .input {
+    @apply block min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-soft
+      transition placeholder:text-slate-400 hover:border-slate-300
+      focus:border-water-500 focus:outline-none focus:ring-4 focus:ring-water-500/15
+      disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
+  }
+  select.input {
+    @apply appearance-none bg-no-repeat pr-9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.6rem center;
+    background-size: 1.25rem;
+  }
+  .input-error {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-500/15;
+  }
+  .label {
+    @apply mb-1.5 block text-[13px] font-medium text-slate-700;
+  }
+
+  /* ---- Surfaces --------------------------------------------------------------------------- */
+  .card {
+    @apply rounded-2xl border border-slate-200/70 bg-white shadow-card;
+  }
+  .card-hover {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:border-water-200 hover:shadow-lift;
+  }
+
+  /* ---- Tabs / filter chips ---------------------------------------------------------------- */
+  .chip {
+    @apply inline-flex h-9 flex-none items-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600
+      shadow-soft transition hover:border-slate-300 hover:bg-slate-50;
+  }
+  .chip-active {
+    @apply border-water-600 bg-water-600 text-white shadow-glow hover:border-water-700 hover:bg-water-700;
+  }
+
+  /* ---- Tables ----------------------------------------------------------------------------- */
+  .table-wrap {
+    @apply overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-card;
+  }
+  .table {
+    @apply min-w-full text-sm;
+  }
+  .table thead {
+    @apply border-b border-slate-200 bg-slate-50/80;
+  }
+  .table th {
+    @apply whitespace-nowrap px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500;
+  }
+  .table td {
+    @apply px-4 py-3.5 align-middle text-slate-700;
+  }
+  .table tbody {
+    @apply divide-y divide-slate-100;
+  }
+  .table tbody tr {
+    @apply transition-colors hover:bg-water-50/50;
+  }
+
+  /* ---- Loading skeleton ------------------------------------------------------------------- */
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-slate-200/70;
+  }
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_1.4s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Hide scrollbars on horizontally scrolling chip rows. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
