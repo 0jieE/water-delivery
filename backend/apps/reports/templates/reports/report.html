@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: a4 portrait; margin: 1.6cm; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #0f172a; }
+  h1 { font-size: 16pt; color: #0369a1; margin: 0 0 2px 0; }
+  .station { font-size: 9pt; color: #475569; margin-bottom: 2px; }
+  .period { font-size: 9pt; color: #475569; margin-bottom: 14px; }
+  table { width: 100%; }
+  th { background-color: #0369a1; color: #ffffff; padding: 5px; font-size: 9pt; text-align: left; }
+  td { padding: 4px 5px; border-bottom: 1px solid #e2e8f0; font-size: 9pt; }
+  .num { text-align: right; }
+  .total td { font-weight: bold; border-top: 2px solid #0369a1; background-color: #f1f5f9; }
+  .empty { color: #64748b; padding: 12px 0; }
+  .footer { margin-top: 14px; font-size: 8pt; color: #64748b; }
+</style>
+</head>
+<body>
+  <div class="station">Deep Water Refilling Station &middot; Kidapawan City</div>
+  <h1>{{ report.title }}</h1>
+  <div class="period">Period: {{ report.date_from }} to {{ report.date_to }}</div>
+
+  {% if rows %}
+  <table cellspacing="0">
+    <thead>
+      <tr>
+        {% for header in headers %}<th>{{ header }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% for cell in row %}<td{% if cell.right %} class="num"{% endif %}>{{ cell.text }}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+      {% if totals %}
+      <tr class="total">
+        {% for cell in totals %}<td{% if cell.right %} class="num"{% endif %}>{{ cell.text }}</td>{% endfor %}
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">No data for this period.</div>
+  {% endif %}
+
+  <div class="footer">Generated {{ report.generated_at }}. {{ report.note }}</div>
+</body>
+</html>

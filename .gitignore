@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+backend/.env
+backend/db.sqlite3
+backend/backups/
+backend/media/
+backend/staticfiles/
+# Node
+node_modules/
+frontend/dist/
+frontend/.env
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# Local leftovers / generated
+_to_delete/
+*.tsbuildinfo
