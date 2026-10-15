@@ -18,6 +18,7 @@ python manage.py runserver
 
 * API: http://localhost:8000/api/ · Django admin: http://localhost:8000/admin/
 * Migrations are already in the repo — do not run `makemigrations` unless you change a model.
+* Runs on Python 3.10 to 3.14 with Django 5.2 LTS (the suite passes on 3.13 and 3.14). Django 5.1 is **not** safe on Python 3.14: the admin table pages return 500.
 * If PowerShell blocks `activate`: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 * `python manage.py createsuperuser` creates a user with the **admin** role automatically.
 * Set a long random `DJANGO_SECRET_KEY` in `.env` (the sample value is for development only).
