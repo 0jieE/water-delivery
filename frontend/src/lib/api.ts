@@ -1,5 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { clearSession, getAccessToken, getRefreshToken, setAccessToken } from "./auth";
+import { trackRequestEnd, trackRequestStart } from "./serverStatus";
 import type { ApiErrorInfo } from "./types";
 
 const baseURL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
@@ -9,7 +10,7 @@ export const api = axios.create({ baseURL });
 // A bare client with no interceptors, used only for the refresh call so it can never loop.
 const bare = axios.create({ baseURL });
 
-type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean; _track?: number };
 
 /**
  * Login, token refresh and registration must go out *without* a Bearer header: DRF rejects an
@@ -21,6 +22,7 @@ function isAnonymousAuthUrl(url?: string) {
 }
 
 api.interceptors.request.use((config) => {
+  (config as RetriableConfig)._track = trackRequestStart(); // drives the "server is waking up" notice
   if (isAnonymousAuthUrl(config.url)) return config;
   const token = getAccessToken();
   if (token) config.headers.set("Authorization", `Bearer ${token}`);
@@ -39,9 +41,13 @@ async function refreshAccessToken(): Promise<string> {
 }
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    trackRequestEnd((response.config as RetriableConfig)._track);
+    return response;
+  },
   async (error: AxiosError) => {
     const original = error.config as RetriableConfig | undefined;
+    trackRequestEnd(original?._track);
     if (error.response?.status !== 401 || !original || isAnonymousAuthUrl(original.url)) {
       return Promise.reject(error);
     }

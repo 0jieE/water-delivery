@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert, EmptyState, ErrorState, LoadingState, PageHeader, Pill, Spinner } from "@/components/ui";
 import { useToast } from "@/components/Toast";
-import { api, downloadFile, errorMessage } from "@/lib/api";
+import { api, downloadFile, errorMessage, parseApiError } from "@/lib/api";
 import { formatBytes, formatDateTime } from "@/lib/format";
 import type { BackupFile } from "@/lib/types";
 
@@ -24,6 +24,10 @@ export default function BackupsPage() {
     },
     onError: (e) => toast.error(errorMessage(e)),
   });
+
+  // Some hosts (e.g. Render) have no pg_dump, so the API answers 503 `backup_failed` with an explanation.
+  // That is a property of the deployment, not a bug, so show it as information instead of a red error.
+  const unavailable = [backups.error, create.error].find((e) => e && parseApiError(e).code === "backup_failed");
 
   async function download(file: BackupFile) {
     setDownloading(file.filename);
@@ -55,7 +59,15 @@ export default function BackupsPage() {
         </Alert>
       </div>
 
-      {backups.isPending ? (
+      {unavailable ? (
+        <div className="card">
+          <EmptyState
+            icon="db"
+            title="Backups aren't available on this server"
+            hint={`${parseApiError(unavailable).detail} Use your database provider's own backups instead (for example, the scheduled backups in the hosting dashboard).`}
+          />
+        </div>
+      ) : backups.isPending ? (
         <LoadingState label="Loading backups…" />
       ) : backups.isError ? (
         <ErrorState message={errorMessage(backups.error)} onRetry={() => backups.refetch()} />

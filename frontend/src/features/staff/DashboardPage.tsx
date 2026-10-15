@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Icon from "@/components/Icon";
 import { Avatar, Card, EmptyState, ErrorState, LoadingState, OrderStatusBadge, PageHeader, StatCard } from "@/components/ui";
 import { StatTile, type SparkPoint } from "@/components/charts";
@@ -100,7 +101,11 @@ export default function DashboardPage() {
             />
           </div>
 
-          {base === "/admin" && <SalesTile />}
+          {base === "/admin" && (
+            <ErrorBoundary fallback={null}>
+              <SalesTile />
+            </ErrorBoundary>
+          )}
 
           <Card title={`Today's deliveries · ${dash.data.today_total} order${dash.data.today_total === 1 ? "" : "s"}`}>
             {dash.data.today_total > 0 && (

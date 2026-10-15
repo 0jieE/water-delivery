@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import LoginPage from "./features/auth/LoginPage";
 import RegisterPage from "./features/auth/RegisterPage";
@@ -24,6 +24,8 @@ import DeliveriesPage, { HistoryPage } from "./features/rider/DeliveriesPage";
 import DeliveryDetailPage from "./features/rider/DeliveryDetailPage";
 import TripPage from "./features/rider/TripPage";
 import RiderCashPage from "./features/rider/CashPage";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ServerNotice from "./components/ServerNotice";
 import { homePathFor, useSession } from "./lib/auth";
 
 function RootRedirect() {
@@ -45,7 +47,11 @@ const staffRoutes = (
 );
 
 export default function App() {
+  const location = useLocation();
   return (
+    <>
+    <ServerNotice />
+    <ErrorBoundary resetKey={location.pathname}>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -97,5 +103,7 @@ export default function App() {
       <Route path="/" element={<RootRedirect />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </ErrorBoundary>
+    </>
   );
 }
