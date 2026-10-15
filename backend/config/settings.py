@@ -107,8 +107,8 @@ MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", BASE_DIR / "media"))
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STORAGES = storages_from_env(os.environ)
-# Without a cloud bucket, Django itself serves /media/ (small deployments with a persistent disk).
-SERVE_MEDIA_FILES = os.getenv("SERVE_MEDIA_FILES", "False" if os.getenv("AWS_STORAGE_BUCKET_NAME") else "True") == "True"
+# On local disk (e.g. a persistent disk) Django itself serves /media/; with Cloudinary it does not. (small deployments with a persistent disk).
+SERVE_MEDIA_FILES = os.getenv("SERVE_MEDIA_FILES", "False" if os.getenv("CLOUDINARY_URL") else "True") == "True"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

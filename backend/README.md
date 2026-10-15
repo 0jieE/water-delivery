@@ -57,7 +57,7 @@ python manage.py check
 python manage.py test apps
 ```
 
-280 tests: status-transition rules, role permissions and per-user visibility (a customer cannot see another
+290 tests: status-transition rules, role permissions and per-user visibility (a customer cannot see another
 customer's order, a rider cannot see unassigned orders), server-side totals and price snapshots, rider
 availability rules, COD collection, payment proof upload and verification, notifications and email, reports
 (JSON/PDF/XLSX), backup/restore round-trip, delivery map pins and saved home locations, the admin-managed GCash QR settings, GCash-only checkout, COD cash remittance, the demo seed, and the uniform error shape.
@@ -100,7 +100,7 @@ PostgreSQL server — try `backup_db` and `restore_db` on your PostgreSQL setup 
 **Check it:** open `https://<your-service>/api/health/`. `{"status":"ok","database":"postgresql"}` means it is working. Anything else says what is wrong (`"database":"sqlite"` = the database variables were not picked up; `migrations_pending` = run `migrate`; `error` = cannot reach the database). Request errors, with their traceback, are printed to the service log.
 
 **Uploaded files (payment proofs, GCash QR).** Render's disk is wiped on every deploy, so pick one:
-- *Cloud bucket (recommended):* any S3-compatible service (AWS S3, Cloudflare R2, Backblaze B2). Set `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and, for non-AWS providers, `AWS_S3_ENDPOINT_URL` (and `AWS_S3_REGION_NAME`, e.g. `auto` for R2). Files stay private: the API returns time-limited `https` links (`AWS_QUERYSTRING_EXPIRE`, default 24 h).
+- *Cloudinary (recommended, free tier):* set one variable, `CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>` (copy it from Cloudinary's *API Keys* page). Files are stored as private ("authenticated") assets under `payment_proofs/` and `payment_settings/`, and the API returns signed `https://res.cloudinary.com/...` links that go straight into an `<img src>`. The backend does not serve `/media/` in this mode.
 - *Persistent disk (paid plan):* mount a disk, then set `MEDIA_ROOT=/var/data/media`. Django serves `/media/` itself in that case.
 
 **Database backups.** `backup_db` and the Backups page use `pg_dump`, which is not on Render's Python runtime, so the Backups page answers `503` there. Use the database's own backups/export in the Render dashboard, or run `python manage.py backup_db` on your own computer with `DATABASE_URL` pointing at the External URL. If you do mount a disk, `BACKUP_DIR=/var/data/backups` keeps backup files across deploys.

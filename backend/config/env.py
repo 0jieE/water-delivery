@@ -78,30 +78,15 @@ def _postgres(env, *, name, user, password, host, port, sslmode):
 
 
 def storages_from_env(env):
-    """Django STORAGES. Uploaded files go to local disk by default; set AWS_STORAGE_BUCKET_NAME (and the
-    other AWS_* values) to keep them in any S3-compatible bucket (AWS S3, Cloudflare R2, Backblaze B2...),
-    which survives redeploys on hosts with a temporary disk such as Render."""
+    """Django STORAGES. Uploaded files (payment proofs, GCash QR) go to local disk by default.
+
+    Set CLOUDINARY_URL (cloudinary://<api_key>:<api_secret>@<cloud_name>) to keep them on Cloudinary,
+    which survives redeploys on hosts with a temporary disk such as Render.
+    """
     storages = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
     }
-    bucket = env.get("AWS_STORAGE_BUCKET_NAME")
-    if bucket:
-        options = {
-            "bucket_name": bucket,
-            "access_key": env.get("AWS_ACCESS_KEY_ID"),
-            "secret_key": env.get("AWS_SECRET_ACCESS_KEY"),
-            "endpoint_url": env.get("AWS_S3_ENDPOINT_URL") or None,
-            "region_name": env.get("AWS_S3_REGION_NAME") or None,
-            "signature_version": "s3v4",
-            # private bucket + time-limited https links, so payment proofs are not public
-            "querystring_auth": env.get("AWS_QUERYSTRING_AUTH", "True") == "True",
-            "querystring_expire": int(env.get("AWS_QUERYSTRING_EXPIRE", "86400")),
-            "file_overwrite": False,
-            "default_acl": None,
-        }
-        storages["default"] = {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {key: value for key, value in options.items() if value is not None},
-        }
+    if env.get("CLOUDINARY_URL"):
+        storages["default"] = {"BACKEND": "config.cloudinary_storage.CloudinaryStorage"}
     return storages

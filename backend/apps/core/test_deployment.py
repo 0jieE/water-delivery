@@ -63,32 +63,13 @@ class EnvironmentSettingsTests(SimpleTestCase):
         with self.assertRaises(ValueError):
             env.database_from_env({"DATABASE_URL": "mysql://u:p@h/db"}, "/app")
 
-    def test_storage_is_local_unless_a_bucket_is_configured(self):
+    def test_storage_is_local_unless_cloudinary_is_configured(self):
         storages = env.storages_from_env({})
         self.assertEqual(storages["default"]["BACKEND"], "django.core.files.storage.FileSystemStorage")
         self.assertIn("whitenoise", storages["staticfiles"]["BACKEND"])
-
-    def test_s3_compatible_storage(self):
-        storages = env.storages_from_env(
-            {
-                "AWS_STORAGE_BUCKET_NAME": "proofs",
-                "AWS_ACCESS_KEY_ID": "key",
-                "AWS_SECRET_ACCESS_KEY": "secret",
-                "AWS_S3_ENDPOINT_URL": "https://account.r2.cloudflarestorage.com",
-                "AWS_S3_REGION_NAME": "auto",
-            }
-        )
-        default = storages["default"]
-        self.assertEqual(default["BACKEND"], "storages.backends.s3.S3Storage")
-        options = default["OPTIONS"]
-        self.assertEqual(options["bucket_name"], "proofs")
-        self.assertEqual(options["endpoint_url"], "https://account.r2.cloudflarestorage.com")
-        self.assertTrue(options["querystring_auth"])  # private bucket, time-limited https links
-        self.assertEqual(options["querystring_expire"], 86400)
-        self.assertFalse(options["file_overwrite"])
-        self.assertNotIn(None, options.values())
-        plain = env.storages_from_env({"AWS_STORAGE_BUCKET_NAME": "b"})["default"]["OPTIONS"]
-        self.assertNotIn("endpoint_url", plain)
+        cloud = env.storages_from_env({"CLOUDINARY_URL": "cloudinary://key:secret@cloudname"})
+        self.assertEqual(cloud["default"]["BACKEND"], "config.cloudinary_storage.CloudinaryStorage")
+        self.assertIn("whitenoise", cloud["staticfiles"]["BACKEND"])  # static files are unaffected
 
 
 class HealthEndpointTests(APITestBase):

@@ -3,7 +3,7 @@
 Deep Water Refilling Station · Django REST API · all paths start with `/api/`.
 Dev base URL: `http://localhost:8000/api/` (the Vite dev origin `http://localhost:5173` is allowed by CORS).
 
-Everything below was checked against the running code (280 backend tests + a live HTTP smoke test). Sample
+Everything below was checked against the running code (290 backend tests + a live HTTP smoke test). Sample
 responses are real output from the seeded demo database, trimmed where marked `…`.
 
 ---
@@ -23,7 +23,7 @@ responses are real output from the seeded demo database, trimmed where marked `�
 | **Pagination** | List endpoints marked *paginated* return `{"count", "next", "previous", "results"}`. Query: `?page=2&page_size=50` (default 20, max 100). `next`/`previous` are absolute URLs or `null`. Endpoints marked *plain array* return a bare JSON array. |
 | **Ordering** | `?ordering=field` or `?ordering=-field` where the endpoint lists `ordering` fields. |
 | **Empty body actions** | `POST` actions with no body fields (e.g. `confirm`) accept an empty body. Send `{}` or nothing. |
-| **Image URLs** | `proof_image` and `gcash_qr_image` are **absolute URLs** (`http://localhost:8000/media/payment_proofs/<random>.png`) or `null`. Use it directly in `<img src>`; no auth header needed. File names are random and unguessable. |
+| **Image URLs** | `proof_image` and `gcash_qr_image` are **absolute URLs** or `null`: `http://localhost:8000/media/payment_proofs/<random>.png` in development, and a signed `https://res.cloudinary.com/<cloud>/image/authenticated/s--<signature>--/payment_proofs/<random>.png` when deployed. Use the value exactly as given (never rebuild or edit it) in `<img src>`; no auth header needed. File names are random and unguessable. |
 | **Trailing slash** | Every URL ends with `/`. |
 | **Unknown/foreign records** | Records outside the caller's scope return **404** (not 403), so existence is not leaked. |
 
