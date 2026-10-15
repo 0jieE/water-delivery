@@ -57,7 +57,7 @@ python manage.py check
 python manage.py test apps
 ```
 
-251 tests: status-transition rules, role permissions and per-user visibility (a customer cannot see another
+280 tests: status-transition rules, role permissions and per-user visibility (a customer cannot see another
 customer's order, a rider cannot see unassigned orders), server-side totals and price snapshots, rider
 availability rules, COD collection, payment proof upload and verification, notifications and email, reports
 (JSON/PDF/XLSX), backup/restore round-trip, delivery map pins and saved home locations, the admin-managed GCash QR settings, GCash-only checkout, COD cash remittance, the demo seed, and the uniform error shape.
@@ -75,6 +75,37 @@ All code uses the ORM only (no raw SQL, no PostgreSQL-only fields), so only `mig
 **Honest caveat:** this build was developed and tested on SQLite. The PostgreSQL backup/restore commands are covered
 by unit tests that check the exact `pg_dump`/`pg_restore` calls, but they have not been run against a real
 PostgreSQL server — try `backup_db` and `restore_db` on your PostgreSQL setup before relying on them.
+
+## Deploying to Render
+
+**Web service** (root directory `backend`)
+
+| Setting | Value |
+|---|---|
+| Build Command | `pip install -r requirements-prod.txt && python manage.py collectstatic --noinput` |
+| Pre-Deploy Command | `python manage.py migrate` |
+| Start Command | `gunicorn config.wsgi:application` |
+
+**Environment variables**
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | the database's URL from Render (the *Internal* one inside Render, the *External* one from anywhere); or use `DB_ENGINE=postgres` + `DB_NAME` `DB_USER` `DB_PASSWORD` `DB_HOST` `DB_PORT` |
+| `DJANGO_SECRET_KEY` | a long random value |
+| `DJANGO_DEBUG` | `False` |
+| `DJANGO_ALLOWED_HOSTS` | your domains, comma-separated (Render's own host is added automatically) |
+| `CORS_ALLOWED_ORIGINS` | the frontend origin(s), e.g. `https://my-frontend.onrender.com` |
+| `CSRF_TRUSTED_ORIGINS` | optional; the API's own https origin is added automatically |
+
+**Check it:** open `https://<your-service>/api/health/`. `{"status":"ok","database":"postgresql"}` means it is working. Anything else says what is wrong (`"database":"sqlite"` = the database variables were not picked up; `migrations_pending` = run `migrate`; `error` = cannot reach the database). Request errors, with their traceback, are printed to the service log.
+
+**Uploaded files (payment proofs, GCash QR).** Render's disk is wiped on every deploy, so pick one:
+- *Cloud bucket (recommended):* any S3-compatible service (AWS S3, Cloudflare R2, Backblaze B2). Set `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and, for non-AWS providers, `AWS_S3_ENDPOINT_URL` (and `AWS_S3_REGION_NAME`, e.g. `auto` for R2). Files stay private: the API returns time-limited `https` links (`AWS_QUERYSTRING_EXPIRE`, default 24 h).
+- *Persistent disk (paid plan):* mount a disk, then set `MEDIA_ROOT=/var/data/media`. Django serves `/media/` itself in that case.
+
+**Database backups.** `backup_db` and the Backups page use `pg_dump`, which is not on Render's Python runtime, so the Backups page answers `503` there. Use the database's own backups/export in the Render dashboard, or run `python manage.py backup_db` on your own computer with `DATABASE_URL` pointing at the External URL. If you do mount a disk, `BACKUP_DIR=/var/data/backups` keeps backup files across deploys.
+
+Render's free plan sleeps the service after inactivity; the first request afterwards can take 30-60 s.
 
 ## Layout
 

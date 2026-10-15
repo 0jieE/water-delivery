@@ -3,7 +3,7 @@
 Deep Water Refilling Station · Django REST API · all paths start with `/api/`.
 Dev base URL: `http://localhost:8000/api/` (the Vite dev origin `http://localhost:5173` is allowed by CORS).
 
-Everything below was checked against the running code (251 backend tests + a live HTTP smoke test). Sample
+Everything below was checked against the running code (280 backend tests + a live HTTP smoke test). Sample
 responses are real output from the seeded demo database, trimmed where marked `…`.
 
 ---
@@ -155,6 +155,7 @@ The server owns these rules. Every order response carries **`allowed_transitions
 | Notifications | `GET notifications/` · `GET notifications/unread-count/` · `POST notifications/{id}/mark-read/` · `POST notifications/mark-all-read/` | any signed-in |
 | Reports | `GET reports/sales/daily/` · `sales/monthly/` · `orders-by-status/` · `deliveries-per-rider/` · `top-services/` · `cash/` | admin |
 | Backups | `GET backups/` · `POST backups/` · `GET backups/{filename}/download/` | admin |
+| Health | `GET health/` | Public |
 
 ---
 
@@ -731,6 +732,23 @@ link.click();
   `size` is in bytes; `engine` is `sqlite` or `postgres` (`.dump` files).
 * `POST backups/` — no body. Takes a backup now. `201` → one entry as above. `503 backup_failed` when it cannot run (database busy; `pg_dump` not installed on a PostgreSQL deployment).
 * `GET backups/{filename}/download/` — streams the file as an attachment (use `responseType: 'blob'` as for report exports). An unknown but well-formed name → `404`; a malformed name → `400`.
+
+### Health check — `GET health/` *(Public)*
+
+For deployments: can the API reach its database, and is it fully migrated?
+
+```json
+{ "status": "ok", "database": "postgresql" }
+```
+`200` when everything is fine. Otherwise `503` with what is wrong (never a host, user or password):
+
+| Body | Meaning |
+|---|---|
+| `{ "status": "error", "database": "postgresql", "error": "OperationalError" }` | the database cannot be reached (wrong host/credentials). `error` is only the exception class. |
+| `{ "status": "migrations_pending", "database": "postgresql", "pending_migrations": 3 }` | connected, but `migrate` has not been run |
+| `"database": "sqlite"` | the database settings were **not picked up** and the server fell back to the development database |
+
+Browsers can read a download's real file name: `Content-Disposition` is exposed through CORS, so `res.headers['content-disposition']` works for report and backup downloads.
 
 There is **no restore endpoint on purpose**: restoring replaces the whole database and is a server-side step (`python manage.py restore_db <file>`, with the server stopped).
 
