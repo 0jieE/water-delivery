@@ -141,7 +141,30 @@ export default function ServicesAdminPage() {
       ) : services.data.length === 0 ? (
         <div className="card"><EmptyState title="No services yet" hint="Create the first service to let customers order." /></div>
       ) : (
-        <div className="table-wrap">
+        <>
+          <ul className="grid gap-3 md:grid-cols-2 lg:hidden">
+            {services.data.map((s) => (
+              <li key={s.id} className={`card p-4 ${s.is_active ? "" : "bg-slate-50"}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className={`text-[15px] font-bold ${s.is_active ? "text-slate-900" : "text-slate-400"}`}>{s.service_name}</p>
+                    {s.description && <p className="mt-0.5 line-clamp-2 text-xs text-slate-500">{s.description}</p>}
+                  </div>
+                  <p className="tabular flex-none text-lg font-bold text-water-700">{money(s.price)}</p>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+                  <Pill tone={s.is_active ? "green" : "slate"}>{s.is_active ? "Active" : "Hidden"}</Pill>
+                  <span className="flex-1" />
+                  <button className="btn-secondary btn-sm" onClick={() => setEditing(s)}>Edit</button>
+                  <button className="btn-secondary btn-sm" disabled={toggle.isPending} onClick={() => toggle.mutate(s)}>
+                    {s.is_active ? "Deactivate" : "Activate"}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+        <div className="table-wrap hidden lg:block">
           <table className="table">
             <thead>
               <tr><th>Service</th><th className="text-right">Price</th><th>Status</th><th>Updated</th><th className="text-right">Actions</th></tr>
@@ -167,6 +190,7 @@ export default function ServicesAdminPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       <ServiceModal open={creating || editing !== null} service={editing} onClose={() => { setCreating(false); setEditing(null); }} />

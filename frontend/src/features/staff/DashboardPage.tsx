@@ -75,7 +75,7 @@ export default function DashboardPage() {
         <ErrorState message={errorMessage(dash.error)} onRetry={() => dash.refetch()} />
       ) : (
         <div className="space-y-5">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-4">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5 lg:gap-4">
             <StatCard label="Orders to confirm" value={dash.data.pending_orders} icon="list" tone="amber" to={`${base}/orders?status=pending`} />
             <StatCard label="Payments to verify" value={dash.data.pending_payments} icon="card" tone="amber" to={`${base}/payments`} />
             <StatCard
@@ -92,13 +92,16 @@ export default function DashboardPage() {
               tone="green"
               to={base === "/admin" ? "/admin/riders" : `${base}/schedule`}
             />
-            <StatCard
-              label="Cash with riders"
-              value={money(dash.data.cash_outstanding)}
-              icon="coin"
-              tone={Number(dash.data.cash_outstanding) > 0 ? "amber" : "green"}
-              to={`${base}/cash`}
-            />
+            {/* On a phone the odd fifth card takes the full row instead of leaving a gap. */}
+            <div className="col-span-2 md:col-span-1">
+              <StatCard
+                label="Cash with riders"
+                value={money(dash.data.cash_outstanding)}
+                icon="coin"
+                tone={Number(dash.data.cash_outstanding) > 0 ? "amber" : "green"}
+                to={`${base}/cash`}
+              />
+            </div>
           </div>
 
           {base === "/admin" && (

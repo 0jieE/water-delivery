@@ -233,8 +233,8 @@ export default function UsersPage() {
         actions={<button className="btn-primary" onClick={() => setCreating(true)}>Create user</button>}
       />
 
-      <div className="card mb-4 grid gap-3 p-4 sm:grid-cols-3">
-        <div>
+      <div className="card mb-4 grid grid-cols-2 gap-3 p-4 md:grid-cols-3">
+        <div className="col-span-2 md:col-span-1">
           <label className="label" htmlFor="uq">Search</label>
           <input id="uq" className="input" placeholder="Username, name, email or phone" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
@@ -263,7 +263,32 @@ export default function UsersPage() {
         <div className="card"><EmptyState title="No users found" hint={filtered ? "Try clearing the filters." : undefined} /></div>
       ) : (
         <>
-          <div className={`table-wrap ${users.isPlaceholderData ? "opacity-60" : ""}`}>
+          {/* Phones and tablets: one card per user. Large screens: the table. */}
+          <ul className={`grid gap-3 md:grid-cols-2 lg:hidden ${users.isPlaceholderData ? "opacity-60" : ""}`}>
+            {users.data.results.map((u) => (
+              <li key={u.id} className="card p-4">
+                <div className="flex items-start gap-3">
+                  <Avatar name={u.full_name || u.username} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-bold text-slate-900">{u.full_name || u.username}</p>
+                    <p className="text-xs text-slate-400">@{u.username} · {ROLE_LABEL[u.role]}</p>
+                  </div>
+                  <Pill tone={u.is_active ? "green" : "slate"}>{u.is_active ? "Active" : "Inactive"}</Pill>
+                </div>
+                <p className="mt-3 text-sm text-slate-700">{u.contact_number || "—"}</p>
+                <p className="truncate text-xs text-slate-500">{u.email || "No email"} · Joined {formatDate(u.created_at)}</p>
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+                  <button className="btn-secondary btn-sm" onClick={() => setEditing(u)}>Edit</button>
+                  <button className="btn-secondary btn-sm" disabled={u.id === me?.id || toggle.isPending} onClick={() => toggle.mutate(u)}>
+                    {u.is_active ? "Deactivate" : "Activate"}
+                  </button>
+                  <button className="btn-secondary btn-sm text-red-700" disabled={u.id === me?.id} onClick={() => { setDeleteError(""); setDeleting(u); }}>Delete</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className={`table-wrap hidden lg:block ${users.isPlaceholderData ? "opacity-60" : ""}`}>
             <table className="table">
               <thead>
                 <tr><th>User</th><th>Role</th><th>Contact</th><th>Joined</th><th>Status</th><th className="text-right">Actions</th></tr>

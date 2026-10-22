@@ -74,7 +74,23 @@ export default function BackupsPage() {
       ) : backups.data.length === 0 ? (
         <div className="card"><EmptyState title="No backups yet" hint="Click “Back up now” to create the first one." /></div>
       ) : (
-        <div className="table-wrap">
+        <>
+          <ul className="grid gap-3 md:grid-cols-2 lg:hidden">
+            {backups.data.map((b) => (
+              <li key={b.filename} className="card p-4">
+                <p className="break-all font-mono text-xs text-slate-700">{b.filename}</p>
+                <p className="mt-1 text-xs text-slate-500">{formatDateTime(b.created_at)} · {formatBytes(b.size)}</p>
+                <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3">
+                  <Pill>{b.engine}</Pill>
+                  <button className="btn-secondary btn-sm" disabled={downloading === b.filename} onClick={() => download(b)}>
+                    {downloading === b.filename && <Spinner className="h-3 w-3" />} Download
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+        <div className="table-wrap hidden lg:block">
           <table className="table">
             <thead>
               <tr><th>File</th><th>Created</th><th>Engine</th><th className="text-right">Size</th><th className="text-right">Download</th></tr>
@@ -96,6 +112,7 @@ export default function BackupsPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

@@ -72,6 +72,19 @@
   .phone .btn:not(.btn-sm) {
     @apply min-h-11;
   }
+  /* On touchscreens (phones, tablets) every control is at least ~40px so fingers can hit it. */
+  @media (pointer: coarse) {
+    .btn-sm {
+      @apply h-10 px-3.5 text-[13px];
+    }
+    .chip {
+      @apply h-10;
+    }
+    input[type="checkbox"],
+    input[type="radio"] {
+      @apply h-5 w-5;
+    }
+  }
 
   /* ---- Form controls ---------------------------------------------------------------------- */
   .input {

@@ -261,7 +261,7 @@ export default function ReportsPage() {
           {PRESETS.map((p) => (
             <button
               key={p.label}
-              className="chip h-8 px-3 text-xs"
+              className="chip px-3 text-xs"
               onClick={() => {
                 const [f, t] = p.range();
                 setFrom(f);

@@ -224,7 +224,34 @@ function History() {
         <div className="card"><EmptyState icon="coin" title="No hand-ins yet" hint="Cash that riders hand in will be listed here." /></div>
       ) : (
         <>
-          <div className={`table-wrap ${list.isPlaceholderData ? "opacity-60" : ""}`}>
+          <ul className={`grid gap-3 md:grid-cols-2 lg:hidden ${list.isPlaceholderData ? "opacity-60" : ""}`}>
+            {list.data.results.map((r) => (
+              <li key={r.id} className="card p-4">
+                <div className="flex items-start gap-3">
+                  <Avatar name={r.rider.full_name} size="sm" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900">{r.rider.full_name}</p>
+                    <p className="text-xs text-slate-400">{formatDateTime(r.received_at)}</p>
+                  </div>
+                  <p className="tabular text-lg font-bold text-emerald-700">{money(r.amount)}</p>
+                </div>
+                <p className="mt-3 text-xs text-slate-500">
+                  Received by {r.received_by.full_name}
+                  {r.remarks ? ` · ${r.remarks}` : ""}
+                </p>
+                <p className="mt-1 text-xs">
+                  {r.orders.map((o, i) => (
+                    <span key={o.order_id}>
+                      {i > 0 && ", "}
+                      <Link to={`${base}/orders/${o.order_id}`} className="font-medium text-water-700 hover:underline">#{o.order_id}</Link>
+                    </span>
+                  ))}
+                </p>
+              </li>
+            ))}
+          </ul>
+
+          <div className={`table-wrap hidden lg:block ${list.isPlaceholderData ? "opacity-60" : ""}`}>
             <table className="table">
               <thead>
                 <tr><th>Received</th><th>Rider</th><th className="text-right">Amount</th><th>Orders</th><th>Received by</th><th>Remarks</th></tr>

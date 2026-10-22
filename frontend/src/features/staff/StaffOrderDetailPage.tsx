@@ -79,7 +79,7 @@ export default function StaffOrderDetailPage() {
       </div>
 
       {hasActions && (
-        <div className="card mb-5 flex flex-wrap items-center gap-2 border-water-200 bg-water-50/40 p-3.5">
+        <div className="card sticky bottom-20 z-20 mb-5 flex flex-wrap items-center gap-2 border-water-200 bg-white/95 p-3.5 shadow-lift backdrop-blur md:static md:bg-water-50/40 md:shadow-card">
           <span className="mr-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Actions</span>
           {can("confirmed") && (
             <button className="btn-primary" onClick={doConfirm} disabled={confirm.isPending}>

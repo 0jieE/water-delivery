@@ -170,8 +170,8 @@ export default function OrdersPage() {
         </div>
       ) : (
         <>
-          {/* Phones: one card per order. md and up: a table. */}
-          <ul className={`space-y-3 md:hidden ${orders.isPlaceholderData ? "opacity-60" : ""}`}>
+          {/* Phones and tablets: cards (two columns on a tablet). Large screens: a table. */}
+          <ul className={`grid gap-3 md:grid-cols-2 lg:hidden ${orders.isPlaceholderData ? "opacity-60" : ""}`}>
             {orders.data.results.map((o) => (
               <li key={o.id}>
                 <Link to={`${base}/orders/${o.id}`} className="card card-hover block p-4">
@@ -199,7 +199,7 @@ export default function OrdersPage() {
             ))}
           </ul>
 
-          <div className={`table-wrap hidden md:block ${orders.isPlaceholderData ? "opacity-60" : ""}`}>
+          <div className={`table-wrap hidden lg:block ${orders.isPlaceholderData ? "opacity-60" : ""}`}>
             <table className="table">
               <thead>
                 <tr>

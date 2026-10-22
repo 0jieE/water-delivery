@@ -12,14 +12,18 @@ export interface NavItem {
   cart?: boolean;
   /** Live count badge from the dashboard counters (staff/admin only). */
   badge?: "pending_orders" | "pending_payments";
+  /** Short label for the phone tab bar and the tablet rail. */
+  short?: string;
+  /** Pinned to the phone bottom tab bar (staff/admin); everything else lives under "More". */
+  tab?: boolean;
 }
 
 const staffItems = (base: string): NavItem[] => [
-  { to: base, label: "Dashboard", end: true, icon: "home", group: "Operations" },
-  { to: `${base}/orders`, label: "Orders", icon: "list", group: "Operations", badge: "pending_orders" },
-  { to: `${base}/schedule`, label: "Delivery schedule", icon: "calendar", group: "Operations" },
-  { to: `${base}/payments`, label: "Payments", icon: "card", group: "Operations", badge: "pending_payments" },
-  { to: `${base}/cash`, label: "Rider cash", icon: "coin", group: "Operations" },
+  { to: base, label: "Dashboard", short: "Home", end: true, icon: "home", group: "Operations", tab: true },
+  { to: `${base}/orders`, label: "Orders", icon: "list", group: "Operations", badge: "pending_orders", tab: true },
+  { to: `${base}/schedule`, label: "Delivery schedule", short: "Schedule", icon: "calendar", group: "Operations" },
+  { to: `${base}/payments`, label: "Payments", icon: "card", group: "Operations", badge: "pending_payments", tab: true },
+  { to: `${base}/cash`, label: "Rider cash", short: "Cash", icon: "coin", group: "Operations", tab: true },
 ];
 
 export function navFor(role: Role): NavItem[] {
@@ -60,6 +64,15 @@ export const roleLabel: Record<Role, string> = {
   rider: "Rider",
   customer: "Customer",
 };
+
+/** Just the logo tile (used where there is no room for the name, e.g. the tablet rail). */
+export function BrandMark() {
+  return (
+    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-gradient-to-b from-water-400 to-water-600 text-white shadow-glow">
+      <Icon name="drop" className="h-5 w-5 fill-white/90" strokeWidth={1.4} />
+    </span>
+  );
+}
 
 export function Brand({ compact = false, light = false }: { compact?: boolean; light?: boolean }) {
   return (

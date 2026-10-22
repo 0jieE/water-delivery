@@ -233,8 +233,8 @@ export default function RidersPage() {
         actions={<button className="btn-primary" onClick={() => setCreating(true)}>Add rider</button>}
       />
 
-      <div className="card mb-4 grid gap-3 p-4 sm:grid-cols-3">
-        <div>
+      <div className="card mb-4 grid grid-cols-2 gap-3 p-4 md:grid-cols-3">
+        <div className="col-span-2 md:col-span-1">
           <label className="label" htmlFor="rq">Search</label>
           <input id="rq" className="input" placeholder="Name, username or phone" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
@@ -262,7 +262,32 @@ export default function RidersPage() {
       ) : riders.data.length === 0 ? (
         <div className="card"><EmptyState title="No riders found" hint="Add a rider to start assigning deliveries." /></div>
       ) : (
-        <div className="table-wrap">
+        <>
+          {/* Phones and tablets: cards. Large screens: the table. */}
+          <ul className="grid gap-3 md:grid-cols-2 lg:hidden">
+            {riders.data.map((r) => (
+              <li key={r.id} className="card p-4">
+                <div className="flex items-start gap-3">
+                  <Avatar name={r.full_name} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-bold text-slate-900">{r.full_name}</p>
+                    <p className="text-xs text-slate-400">@{r.username} · {r.vehicle_type || "No vehicle"}</p>
+                  </div>
+                  <RiderStatusBadge status={r.status} />
+                </div>
+                <p className="mt-3 text-sm text-slate-700">{r.contact_number}</p>
+                <p className="truncate text-xs text-slate-500">{r.email || "No email"}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+                  <Pill tone={r.is_active ? "green" : "slate"}>{r.is_active ? "Active" : "Inactive"}</Pill>
+                  <span className="flex-1" />
+                  <button className="btn-secondary btn-sm" onClick={() => setEditing(r)}>Edit</button>
+                  <button className="btn-secondary btn-sm text-red-700" onClick={() => { setDeleteError(""); setDeleting(r); }}>Delete</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+        <div className="table-wrap hidden lg:block">
           <table className="table">
             <thead>
               <tr><th>Rider</th><th>Vehicle</th><th>Contact</th><th>Availability</th><th>Account</th><th className="text-right">Actions</th></tr>
@@ -295,6 +320,7 @@ export default function RidersPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       <CreateRiderModal open={creating} onClose={() => setCreating(false)} />
