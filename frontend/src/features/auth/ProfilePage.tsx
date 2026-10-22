@@ -6,6 +6,7 @@ import { api, errorMessage, fieldErrors, parseApiError } from "@/lib/api";
 import { setUser } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { round6, toPin, type LatLng } from "@/lib/geo";
+import InstallCard from "@/components/InstallCard";
 import { LocationPicker } from "@/components/map";
 import type { User } from "@/lib/types";
 
@@ -178,6 +179,7 @@ export default function ProfilePage() {
       ) : (
         <>
           <ProfileForm key={me.data.id} user={me.data} />
+          <InstallCard />
           <PasswordForm />
         </>
       )}

@@ -25,7 +25,7 @@ import DeliveryDetailPage from "./features/rider/DeliveryDetailPage";
 import TripPage from "./features/rider/TripPage";
 import RiderCashPage from "./features/rider/CashPage";
 import ErrorBoundary from "./components/ErrorBoundary";
-import ServerNotice from "./components/ServerNotice";
+import PwaNotices from "./components/PwaNotices";
 import { homePathFor, useSession } from "./lib/auth";
 
 function RootRedirect() {
@@ -50,7 +50,7 @@ export default function App() {
   const location = useLocation();
   return (
     <>
-    <ServerNotice />
+    <PwaNotices />
     <ErrorBoundary resetKey={location.pathname}>
     <Routes>
       <Route path="/login" element={<LoginPage />} />

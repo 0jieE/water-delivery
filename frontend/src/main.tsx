@@ -6,6 +6,7 @@ import axios from "axios";
 import App from "./App";
 import { ToastProvider } from "./components/Toast";
 import { CartProvider } from "./lib/cart";
+import { initPwa } from "./lib/pwa";
 import "@fontsource-variable/inter";
 import "./index.css";
 
@@ -20,8 +21,13 @@ const queryClient = new QueryClient({
       },
       staleTime: 5_000,
     },
+    // While offline a tap on "Delivered" or "Place order" must fail straight away with a clear message,
+    // not sit "pending" and fire later when the connection returns.
+    mutations: { networkMode: "always" },
   },
 });
+
+initPwa();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
