@@ -163,11 +163,11 @@ export default function TripPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-[1fr_1fr_auto] gap-2 border-t border-slate-100 bg-slate-50/60 p-3">
-                      <button className="btn-success" onClick={() => setActive({ d, dialog: "deliver" })}>
+                    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-2 border-t border-slate-100 bg-slate-50/60 p-3">
+                      <button className="btn-success px-2" onClick={() => setActive({ d, dialog: "deliver" })}>
                         <Icon name="checkCircle" className="h-4 w-4" /> Delivered
                       </button>
-                      <button className="btn-secondary text-red-700" onClick={() => setActive({ d, dialog: "fail" })}>
+                      <button className="btn-secondary px-2 text-red-700" onClick={() => setActive({ d, dialog: "fail" })}>
                         <Icon name="xCircle" className="h-4 w-4" /> Failed
                       </button>
                       <a href={`tel:${d.customer.contact_number}`} className="btn-secondary px-3" aria-label={`Call ${d.customer.full_name}`}>

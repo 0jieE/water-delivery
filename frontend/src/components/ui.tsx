@@ -220,7 +220,7 @@ export function PageHeader({
 
 export function BackLink({ to, children }: { to: string; children: ReactNode }) {
   return (
-    <Link to={to} className="inline-flex items-center gap-1 rounded-lg py-1 pr-2 text-sm font-medium text-slate-500 hover:text-water-700">
+    <Link to={to} className="-ml-1 inline-flex min-h-10 items-center gap-1 rounded-lg px-1 pr-3 text-sm font-medium text-slate-500 hover:text-water-700">
       <Icon name="arrowLeft" className="h-4 w-4" /> {children}
     </Link>
   );

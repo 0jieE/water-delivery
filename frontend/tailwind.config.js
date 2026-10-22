@@ -57,5 +57,7 @@ export default {
     // `sm:` look at the browser window, which on a desktop would wrongly switch the narrow phone
     // frame to multi-column layouts. Use it as `sm:wide:grid-cols-2` in components shared with staff.
     plugin(({ addVariant }) => addVariant("wide", "&:not(.phone *)")),
+    // `short:` applies on very short screens (a phone held sideways) so the chrome can shrink.
+    plugin(({ addVariant }) => addVariant("short", "@media (max-height: 480px)")),
   ],
 };

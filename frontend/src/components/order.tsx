@@ -5,7 +5,26 @@ import { Card, DefinitionList, EmptyState, Modal, OrderStatusBadge, PaymentStatu
 
 export function OrderItemsTable({ items, total }: { items: OrderItem[]; total: string }) {
   return (
-    <div className="overflow-x-auto">
+    <>
+      {/* Narrow phones: one stacked row per item instead of a four-column table. */}
+      <ul className="divide-y divide-slate-100 text-sm sm:hidden">
+        {items.map((i) => (
+          <li key={i.id} className="flex items-start justify-between gap-3 py-2.5">
+            <div className="min-w-0">
+              <p className="font-medium text-slate-900">{i.service_name}</p>
+              <p className="text-xs text-slate-500">
+                {i.quantity} × {money(i.unit_price)}
+              </p>
+            </div>
+            <span className="tabular flex-none font-semibold text-slate-900">{money(i.subtotal)}</span>
+          </li>
+        ))}
+        <li className="flex items-center justify-between gap-3 border-t border-slate-200 pt-3 font-semibold">
+          <span>Total</span>
+          <span className="tabular text-water-800">{money(total)}</span>
+        </li>
+      </ul>
+    <div className="hidden overflow-x-auto sm:block">
       <table className="min-w-full text-sm">
         <thead>
           <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
@@ -35,6 +54,7 @@ export function OrderItemsTable({ items, total }: { items: OrderItem[]; total: s
         </tfoot>
       </table>
     </div>
+    </>
   );
 }
 

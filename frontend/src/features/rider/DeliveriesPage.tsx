@@ -213,7 +213,7 @@ export default function DeliveriesPage() {
       )}
 
       {selectMode && selected.size > 0 && (
-        <div className="sticky bottom-0 z-20 mt-4 animate-slide-up">
+        <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 mt-4 animate-slide-up lg:bottom-0">
           <button className="btn-primary btn-lg w-full shadow-pop" onClick={startSelected} disabled={startMany.isPending}>
             {startMany.isPending ? <Spinner className="h-5 w-5 text-white" /> : <Icon name="route" className="h-5 w-5" />}
             Start {selected.size} deliver{selected.size === 1 ? "y" : "ies"}

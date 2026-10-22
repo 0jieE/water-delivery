@@ -143,7 +143,7 @@ export default function CheckoutPage() {
           <Card
             title={`Your items (${cart.count})`}
             actions={
-              <Link to="/customer" className="text-xs font-semibold text-water-700 hover:underline">
+              <Link to="/customer" className="-my-2 -mr-2 inline-flex min-h-10 items-center rounded-lg px-2 text-xs font-semibold text-water-700 hover:underline">
                 + Add more
               </Link>
             }
@@ -163,7 +163,7 @@ export default function CheckoutPage() {
                       </div>
                       <button
                         type="button"
-                        className="-mr-1.5 rounded-lg p-1.5 text-slate-300 hover:bg-red-50 hover:text-red-600"
+                        className="-mr-2 -mt-2 flex h-10 w-10 flex-none items-center justify-center rounded-lg text-slate-300 hover:bg-red-50 hover:text-red-600"
                         onClick={() => cart.remove(l.serviceId)}
                         aria-label={`Remove ${l.name}`}
                       >

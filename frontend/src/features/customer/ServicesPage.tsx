@@ -72,14 +72,14 @@ function ServiceCard({ service }: { service: Service }) {
           <h3 className="text-[15px] font-semibold leading-snug text-slate-900">{service.service_name}</h3>
           <p className="mt-0.5 text-[13px] leading-snug text-slate-500">{service.description || "Water refill service."}</p>
         </div>
-        <p className="flex-none text-right">
+        <p className="max-w-[5.5rem] flex-none text-right">
           <span className="tabular block text-lg font-bold text-water-700">{money(service.price)}</span>
           <span className="block text-[11px] text-slate-400">each</span>
         </p>
       </div>
-      <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
         <QuantityStepper value={qty} onChange={setQty} />
-        <button className="btn-primary flex-1" onClick={add}>
+        <button className="btn-primary min-w-[8.5rem] flex-1" onClick={add}>
           <Icon name="plus" className="h-4 w-4" strokeWidth={2.2} /> Add to cart
         </button>
       </div>
@@ -105,7 +105,7 @@ export default function ServicesPage() {
   return (
     <div>
       <section className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-br from-water-500 via-water-600 to-water-800 p-5 text-white shadow-lift">
-        <span className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/10" aria-hidden />
+        <span className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/10" aria-hidden data-decor />
         <span className="pointer-events-none absolute -bottom-14 right-10 h-32 w-32 rounded-full bg-white/10" aria-hidden />
         <p className="text-sm font-medium text-water-100">Hi {first},</p>
         <h1 className="mt-1 max-w-[16rem] text-2xl font-bold leading-tight tracking-tight text-white">Fresh water, delivered to your door.</h1>
@@ -149,7 +149,7 @@ export default function ServicesPage() {
 
       {cart.count > 0 && (
         // Floats above the content, just over the tab bar.
-        <div className="sticky bottom-0 z-20 mt-4 animate-slide-up">
+        <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 mt-4 animate-slide-up lg:bottom-0">
           <Link
             to="/customer/checkout"
             className="flex items-center justify-between gap-3 rounded-2xl bg-slate-900 px-4 py-3.5 text-white shadow-pop transition active:scale-[0.99]"
