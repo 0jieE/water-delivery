@@ -17,6 +17,18 @@ interface ToastApi {
 
 const ToastContext = createContext<ToastApi | null>(null);
 
+/** Light haptic feedback on phones that support it (Android). Skipped when the user prefers reduced motion. */
+function buzz(kind: Kind) {
+  try {
+    if (typeof navigator === "undefined" || !navigator.vibrate) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (kind === "success") navigator.vibrate(12);
+    else if (kind === "error") navigator.vibrate([24, 50, 24]);
+  } catch {
+    /* vibration is a nicety, never a requirement */
+  }
+}
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<ToastItem[]>([]);
   const nextId = useRef(1);
@@ -25,6 +37,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const push = useCallback(
     (kind: Kind, message: string) => {
+      buzz(kind);
       const id = nextId.current++;
       setItems((prev) => [...prev.slice(-3), { id, kind, message }]);
       setTimeout(() => dismiss(id), kind === "success" ? 3800 : 6500);

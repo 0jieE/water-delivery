@@ -250,6 +250,17 @@ export function Card({
   );
 }
 
+const STAT_TONES = {
+  water: { icon: "bg-water-100 text-water-700", bar: "bg-water-500", tint: "from-water-50/80", value: "text-slate-900" },
+  amber: { icon: "bg-amber-100 text-amber-700", bar: "bg-amber-400", tint: "from-amber-50/90", value: "text-amber-950" },
+  red: { icon: "bg-red-100 text-red-700", bar: "bg-red-500", tint: "from-red-50/90", value: "text-red-950" },
+  green: { icon: "bg-emerald-100 text-emerald-700", bar: "bg-emerald-500", tint: "from-emerald-50/80", value: "text-slate-900" },
+} as const;
+
+/**
+ * Compact KPI tile: icon, big number and label in one row, with a coloured accent bar. When `urgent` the
+ * tile is tinted so the numbers that need action stand out from the ones that are just information.
+ */
 export function StatCard({
   label,
   value,
@@ -257,6 +268,7 @@ export function StatCard({
   to,
   tone = "water",
   hint,
+  urgent = false,
 }: {
   label: string;
   value: number | string;
@@ -264,27 +276,26 @@ export function StatCard({
   to?: string;
   tone?: "water" | "amber" | "red" | "green";
   hint?: string;
+  urgent?: boolean;
 }) {
-  const tones = {
-    water: "bg-water-50 text-water-600",
-    amber: "bg-amber-50 text-amber-600",
-    red: "bg-red-50 text-red-600",
-    green: "bg-emerald-50 text-emerald-600",
-  }[tone];
+  const t = STAT_TONES[tone];
   const body = (
     <>
-      <div className="flex items-start justify-between">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${tones}`}>
+      <span className={`absolute inset-y-0 left-0 w-1 ${t.bar}`} aria-hidden />
+      <div className="flex items-center gap-3.5">
+        <span className={`flex h-11 w-11 flex-none items-center justify-center rounded-2xl ${t.icon}`}>
           <Icon name={icon} className="h-5 w-5" />
         </span>
-        {to && <Icon name="chevronRight" className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-water-500" />}
+        <div className="min-w-0 flex-1">
+          <p className={`tabular truncate text-2xl font-bold leading-none tracking-tight ${urgent ? t.value : "text-slate-900"}`}>{value}</p>
+          <p className="mt-1.5 text-[13px] font-medium leading-tight text-slate-500">{label}</p>
+          {hint && <p className="mt-0.5 truncate text-xs text-slate-400">{hint}</p>}
+        </div>
+        {to && <Icon name="chevronRight" className="h-4 w-4 flex-none text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-water-500" />}
       </div>
-      <p className="tabular mt-4 text-3xl font-bold tracking-tight text-slate-900">{value}</p>
-      <p className="mt-0.5 text-[13px] font-medium text-slate-500">{label}</p>
-      {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
     </>
   );
-  const cls = "card group block p-4";
+  const cls = `card group relative block overflow-hidden py-3.5 pl-5 pr-4 ${urgent ? `bg-gradient-to-r ${t.tint} to-white` : ""}`;
   return to ? (
     <Link to={to} className={`${cls} card-hover`}>
       {body}
@@ -293,7 +304,6 @@ export function StatCard({
     <div className={cls}>{body}</div>
   );
 }
-
 export function DefinitionList({ items }: { items: [string, ReactNode][] }) {
   return (
     <dl className="grid grid-cols-1 gap-x-6 gap-y-4 sm:wide:grid-cols-2">
@@ -552,6 +562,40 @@ export function Modal({
         )}
       </div>
     </div>
+  );
+}
+
+// ---- Floating action button -------------------------------------------------------------------
+
+/**
+ * Phone-only "create" button floating above the tab bar, in thumb reach. Larger screens use the header button.
+ * It shrinks to a plain "+" while you scroll down (so it covers less) and expands again when you scroll up.
+ */
+export function Fab({ label, onClick }: { label: string; onClick: () => void }) {
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - last) < 8) return;
+      setCompact(y > 80 && y > last); // down = shrink, up (or back near the top) = expand
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`fixed bottom-24 right-4 z-30 flex h-14 animate-scale-in items-center justify-center gap-2 rounded-full bg-gradient-to-b from-water-500 to-water-600 text-sm font-semibold text-white shadow-glow transition-all duration-200 active:scale-95 md:hidden ${
+        compact ? "w-14" : "pl-4 pr-5"
+      }`}
+    >
+      <Icon name="plus" className="h-6 w-6 flex-none" strokeWidth={2.4} />
+      <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${compact ? "max-w-0 opacity-0" : "max-w-32 opacity-100"}`}>{label}</span>
+    </button>
   );
 }
 

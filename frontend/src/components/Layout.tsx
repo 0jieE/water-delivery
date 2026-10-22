@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { clearSession, useSession } from "@/lib/auth";
+import { usePullToRefresh } from "@/lib/pullToRefresh";
 import { useDashboard } from "@/lib/queries";
 import type { Role } from "@/lib/types";
 import Icon from "./Icon";
 import NotificationBell from "./NotificationBell";
+import PullIndicator from "./PullIndicator";
 import { useToast } from "./Toast";
 import { Avatar, Modal } from "./ui";
 import { Brand, BrandMark, navFor, roleLabel, type NavItem } from "./nav";
@@ -55,6 +57,9 @@ export default function Layout({ role }: { role: Role }) {
       toast.info(`${n === 1 ? "A new payment is" : `${n} new payments are`} waiting for verification.`);
     }
   }, [pendingPayments, toast]);
+
+  // Pull down from the top to refresh everything on screen (touch screens only).
+  const ptr = usePullToRefresh(() => qc.invalidateQueries());
 
   // Any navigation closes the "More" sheet.
   useEffect(() => setMore(false), [pathname]);
@@ -142,6 +147,7 @@ export default function Layout({ role }: { role: Role }) {
   return (
     <div className="min-h-dvh">
       {sidebar}
+      <PullIndicator pull={ptr.pull} refreshing={ptr.refreshing} threshold={ptr.threshold} />
 
       <div className="md:pl-20 lg:pl-64">
         {/* phone header */}

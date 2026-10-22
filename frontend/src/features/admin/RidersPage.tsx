@@ -5,6 +5,7 @@ import {
   Avatar,
   EmptyState,
   ErrorState,
+  Fab,
   LoadingState,
   Modal,
   PageHeader,
@@ -230,7 +231,7 @@ export default function RidersPage() {
       <PageHeader
         title="Riders"
         subtitle="Delivery riders and their availability."
-        actions={<button className="btn-primary" onClick={() => setCreating(true)}>Add rider</button>}
+        actions={<button className="btn-primary hidden md:inline-flex" onClick={() => setCreating(true)}>Add rider</button>}
       />
 
       <div className="card mb-4 grid grid-cols-2 gap-3 p-4 md:grid-cols-3">
@@ -248,7 +249,7 @@ export default function RidersPage() {
         <div>
           <label className="label" htmlFor="ra">Account</label>
           <select id="ra" className="input" value={active} onChange={(e) => setActive(e.target.value)}>
-            <option value="">Active and inactive</option>
+            <option value="">Any account</option>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>
@@ -323,6 +324,7 @@ export default function RidersPage() {
         </>
       )}
 
+      <Fab label="Add rider" onClick={() => setCreating(true)} />
       <CreateRiderModal open={creating} onClose={() => setCreating(false)} />
       <EditRiderModal rider={editing} onClose={() => setEditing(null)} />
 

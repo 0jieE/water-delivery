@@ -4,6 +4,7 @@ import {
   Alert,
   EmptyState,
   ErrorState,
+  Fab,
   LoadingState,
   Modal,
   PageHeader,
@@ -131,7 +132,7 @@ export default function ServicesAdminPage() {
       <PageHeader
         title="Services & pricing"
         subtitle="Manage the water refill services customers can order."
-        actions={<button className="btn-primary" onClick={() => setCreating(true)}>New service</button>}
+        actions={<button className="btn-primary hidden md:inline-flex" onClick={() => setCreating(true)}>New service</button>}
       />
 
       {services.isPending ? (
@@ -193,6 +194,7 @@ export default function ServicesAdminPage() {
         </>
       )}
 
+      <Fab label="New service" onClick={() => setCreating(true)} />
       <ServiceModal open={creating || editing !== null} service={editing} onClose={() => { setCreating(false); setEditing(null); }} />
     </div>
   );

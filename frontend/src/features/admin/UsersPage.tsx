@@ -6,6 +6,7 @@ import {
   Avatar,
   EmptyState,
   ErrorState,
+  Fab,
   LoadingState,
   Modal,
   PageHeader,
@@ -230,7 +231,7 @@ export default function UsersPage() {
       <PageHeader
         title="Users"
         subtitle="Create staff and rider accounts, and activate or deactivate anyone."
-        actions={<button className="btn-primary" onClick={() => setCreating(true)}>Create user</button>}
+        actions={<button className="btn-primary hidden md:inline-flex" onClick={() => setCreating(true)}>Create user</button>}
       />
 
       <div className="card mb-4 grid grid-cols-2 gap-3 p-4 md:grid-cols-3">
@@ -248,7 +249,7 @@ export default function UsersPage() {
         <div>
           <label className="label" htmlFor="ua">Status</label>
           <select id="ua" className="input" value={get("is_active")} onChange={(e) => update({ is_active: e.target.value || undefined })}>
-            <option value="">Active and inactive</option>
+            <option value="">Any status</option>
             <option value="true">Active</option>
             <option value="false">Inactive</option>
           </select>
@@ -329,6 +330,7 @@ export default function UsersPage() {
         </>
       )}
 
+      <Fab label="New user" onClick={() => setCreating(true)} />
       <UserFormModal open={creating || editing !== null} user={editing} onClose={() => { setCreating(false); setEditing(null); }} />
 
       <Modal

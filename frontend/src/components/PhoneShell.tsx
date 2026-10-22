@@ -3,9 +3,11 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { clearSession, useSession } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
+import { usePullToRefresh } from "@/lib/pullToRefresh";
 import type { Role } from "@/lib/types";
 import Icon from "./Icon";
 import NotificationBell from "./NotificationBell";
+import PullIndicator from "./PullIndicator";
 import { Brand, navFor } from "./nav";
 
 /**
@@ -26,6 +28,9 @@ export default function PhoneShell({ role }: { role: Role }) {
   const scroller = useRef<HTMLElement>(null);
   const items = navFor(role);
   const first = (session.user?.first_name || session.user?.username || "").trim();
+
+  // Pull down from the top of the screen to refresh everything (touch screens only).
+  const ptr = usePullToRefresh(() => qc.invalidateQueries(), scroller);
 
   // New screen -> start at the top.
   useEffect(() => {
@@ -59,6 +64,8 @@ export default function PhoneShell({ role }: { role: Role }) {
             </button>
           </div>
         </header>
+
+        <PullIndicator pull={ptr.pull} refreshing={ptr.refreshing} threshold={ptr.threshold} className="absolute left-1/2 top-16 z-40" />
 
         <main ref={scroller} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-5">
           <Outlet />
