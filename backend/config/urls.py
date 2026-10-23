@@ -1,11 +1,15 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.generic import RedirectView
 from django.views.static import serve
 
 from apps.core.views import HealthView
 
 urlpatterns = [
+    # The API has no home page: send visitors to the admin, which shows its login form when signed out
+    # and the dashboard when signed in.
+    path("", RedirectView.as_view(url="/admin/", permanent=False), name="home"),
     path("admin/", admin.site.urls),
     path("api/health/", HealthView.as_view(), name="health"),
     path("api/auth/", include("apps.accounts.urls")),

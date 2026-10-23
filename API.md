@@ -3,7 +3,7 @@
 Deep Water Refilling Station · Django REST API · all paths start with `/api/`.
 Dev base URL: `http://localhost:8000/api/` (the Vite dev origin `http://localhost:5173` is allowed by CORS).
 
-Everything below was checked against the running code (290 backend tests + a live HTTP smoke test). Sample
+Everything below was checked against the running code (305 backend tests + a live HTTP smoke test). Sample
 responses are real output from the seeded demo database, trimmed where marked `…`.
 
 ---

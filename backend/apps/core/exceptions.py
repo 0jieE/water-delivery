@@ -20,6 +20,13 @@ def _flatten(value):
         flat = {key: _flatten(val) for key, val in value.items()}
         if list(flat) == ["non_field_errors"]:  # a nested list-level error: same shape as any field
             return flat["non_field_errors"]
+        if flat and all(str(key).isdigit() for key in flat):
+            # DRF 3.18+ reports errors of a list of items as {"1": {...}} (failing items only);
+            # older versions give [{}, {...}]. Always answer with the aligned list.
+            aligned = [{} for _ in range(max(int(key) for key in flat) + 1)]
+            for key, errors in flat.items():
+                aligned[int(key)] = errors
+            return aligned
         return flat
     if isinstance(value, (list, tuple)):
         flat = []

@@ -20,11 +20,21 @@ class StaticFilesTests(TestCase):
         css = self.client.get("/static/admin/css/base.css")
         self.assertIn("text/css", css["Content-Type"])
 
-    def test_admin_login_page_links_to_those_styles(self):
+    def test_every_stylesheet_and_script_on_the_admin_login_page_is_served(self):
+        import re
+
         page = self.client.get("/admin/login/")
         self.assertEqual(page.status_code, 200)
-        self.assertContains(page, "/static/admin/css/base.css")
-        self.assertContains(page, "/static/admin/css/login.css")
+        html = page.content.decode()
+        assets = set(re.findall(r'(?:href|src)="(/static/[^"?#]+\.(?:css|js))', html))
+        self.assertGreaterEqual(len(assets), 2, assets)  # the theme's stylesheet and its scripts
+        for path in sorted(assets):
+            self.assertEqual(self.client.get(path).status_code, 200, path)
+
+    def test_the_theme_and_favicon_are_served(self):
+        self.assertEqual(self.client.get("/static/favicon.svg").status_code, 200)
+        page = self.client.get("/admin/login/")
+        self.assertContains(page, "Deep Water")
 
     def test_unknown_static_file_is_a_404(self):
         self.assertEqual(self.client.get("/static/admin/css/does-not-exist.css").status_code, 404)

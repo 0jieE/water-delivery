@@ -5,6 +5,7 @@ import sys
 
 from dotenv import load_dotenv
 
+from config.admin_theme import build_unfold
 from config.env import (
     allowed_hosts,
     csrf_trusted_origins,
@@ -25,6 +26,7 @@ CSRF_TRUSTED_ORIGINS = csrf_trusted_origins(os.environ)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 INSTALLED_APPS = [
+    "unfold",  # the admin theme; must come before django.contrib.admin
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -98,6 +100,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]  # our own files (favicon)
 # Also look in the apps' own static folders, so styling works even if `collectstatic` was not run.
 WHITENOISE_USE_FINDERS = "test" not in sys.argv  # off in tests: scanning on every test client is slow
 MEDIA_URL = "media/"
@@ -168,3 +171,6 @@ LOGGING = {
     "root": {"handlers": ["console"], "level": "WARNING"},
     "loggers": {"django.request": {"handlers": ["console"], "level": "ERROR", "propagate": False}},
 }
+
+# Admin site theme. "View site" links to the web app: the first non-localhost CORS origin.
+UNFOLD = build_unfold(frontend_url=next((o for o in CORS_ALLOWED_ORIGINS if "localhost" not in o), None))

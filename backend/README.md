@@ -41,6 +41,12 @@ Password for every account: **`Demo@12345`**
 Re-running it is safe: existing accounts and orders are left alone. `python manage.py seed_demo --reset` deletes **all
 orders and notifications**, restores the demo passwords and rebuilds the demo orders.
 
+## Admin site
+
+Opening the API's home page (`/`) sends you to the admin: the login form when signed out, the dashboard when signed in. Only users with the **admin** role can sign in (`admin` / the demo password on a seeded database).
+
+The admin uses the [Unfold](https://unfoldadmin.com/) theme in water-blue (`config/admin_theme.py`): a grouped sidebar (Operations, People, Store), a dashboard with live figures (orders due today, pending orders, payments to verify, cash held by riders, riders available, 7-day sales, a 14-day sales chart, the latest orders), and colored status badges on the order, payment, rider and user tables. The "View site" link opens the web app (the first non-localhost entry of `CORS_ALLOWED_ORIGINS`).
+
 ## Management commands
 
 | Command | What it does |
@@ -58,7 +64,7 @@ python manage.py check
 python manage.py test apps
 ```
 
-290 tests: status-transition rules, role permissions and per-user visibility (a customer cannot see another
+305 tests: status-transition rules, role permissions and per-user visibility (a customer cannot see another
 customer's order, a rider cannot see unassigned orders), server-side totals and price snapshots, rider
 availability rules, COD collection, payment proof upload and verification, notifications and email, reports
 (JSON/PDF/XLSX), backup/restore round-trip, delivery map pins and saved home locations, the admin-managed GCash QR settings, GCash-only checkout, COD cash remittance, the demo seed, and the uniform error shape.
