@@ -13,10 +13,17 @@
 
     <div class="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {% for kpi in kpis %}
-            {% component "unfold/components/card.html" with href=kpi.href icon=kpi.icon %}
-                {% component "unfold/components/text.html" with class="text-subtle" %}{{ kpi.title }}{% endcomponent %}
-                {% component "unfold/components/title.html" with class="mt-1" %}{{ kpi.value }}{% endcomponent %}
-                {% component "unfold/components/text.html" with class="mt-1 text-subtle" %}{{ kpi.hint }}{% endcomponent %}
+            {% component "unfold/components/card.html" with href=kpi.href %}
+                <div class="flex flex-row items-center gap-3">
+                    <div class="border border-primary-700 bg-primary-600 flex items-center h-[38px] justify-center rounded-default text-white w-[38px] dark:border-primary-500">
+                        <span class="material-symbols-outlined">{{ kpi.icon }}</span>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        {% component "unfold/components/text.html" with class="text-subtle" %}{{ kpi.title }}{% endcomponent %}
+                        {% component "unfold/components/title.html" %}{{ kpi.value }}{% endcomponent %}
+                        {% component "unfold/components/text.html" with class="text-subtle" %}{{ kpi.hint }}{% endcomponent %}
+                    </div>
+                </div>
             {% endcomponent %}
         {% endfor %}
     </div>
